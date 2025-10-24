@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Online Voting</title>
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      margin: 0;
+      background: linear-gradient(135deg, #1e3a8a, #06b6d4);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      margin-top: 30px;
+      font-size: 28px;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+    }
+
+    .container {
+      background: #ffffff20;
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 25px 30px;
+      width: 85%;
+      max-width: 900px;
+      margin-top: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+
+    button {
+      background: #10b981;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #059669;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 85%;
+      margin-top: 10px;
+    }
+
+    .logout-btn {
+      background: #ef4444;
+    }
+
+    .logout-btn:hover {
+      background: #b91c1c;
+    }
+
+    .reset-btn {
+      background: #f59e0b;
+    }
+
+    .reset-btn:hover {
+      background: #d97706;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: #fff;
+      color: #111;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 12px 15px;
+      border-bottom: 1px solid #ddd;
+      text-align: center;
+    }
+
+    th {
+      background: #4f46e5;
+      color: white;
+    }
+
+    tr:hover {
+      background: #f9fafb;
+    }
+
+    .highlight {
+      background: #22c55e !important;
+      color: white !important;
+      font-weight: bold;
+    }
+
+    #modalOverlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #modal {
+      background: #fff;
+      color: #111;
+      padding: 20px;
+      border-radius: 12px;
+      width: 350px;
+    }
+
+    #modal input {
+      width: 100%;
+      padding: 8px;
+      margin: 8px 0;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    #modal button {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧑‍💼 Admin Dashboard - Voting System</h1>
+
+  <div class="top-bar">
+    <button onclick="openAddModal()">➕ Add Candidate</button>
+    <button class="reset-btn" onclick="resetVotes()">Reset All Votes</button>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
+
+  <div class="container">
+    <table id="candidateTable">
+      <thead>
+        <tr>
+          <th>Photo</th>
+          <th>Name</th>
+          <th>Party</th>
+          <th>Votes</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script>
+    function getCandidates() {
+      return JSON.parse(localStorage.getItem("candidates")) || [];
+    }
+
+    function saveCandidates(data) {
+      localStorage.setItem("candidates", JSON.stringify(data));
+    }
+
+    let candidates = getCandidates();
+
+    function renderTable() {
+      const tbody = document.querySelector("#candidateTable tbody");
+      tbody.innerHTML = "";
+
+      candidates = getCandidates(); // Always reload from localStorage
+      const maxVotes = candidates.length ? Math.max(...candidates.map(c => c.votes)) : 0;
+
+      candidates.forEach((c, index) => {
+        const row = document.createElement("tr");
+        if (c.votes === maxVotes && c.votes > 0) row.classList.add("highlight");
+
+        row.innerHTML = `
+          <td><img src="${c.img}" alt="${c.name}" width="60" height="60" style="border-radius:50%"></td>
+          <td>${c.name}</td>
+          <td>${c.party || '-'}</td>
+          <td>${c.votes}</td>
+          <td>
+            <button onclick="editCandidate(${index})" style="background:#3b82f6;color:white;border:none;padding:6px 10px;border-radius:6px;">Edit</button>
+            <button onclick="removeCandidate(${index})" style="background:#ef4444;color:white;border:none;padding:6px 10px;border-radius:6px;">Remove</button>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    function openAddModal() {
+      const modal = document.createElement("div");
+      modal.id = "modalOverlay";
+      modal.innerHTML = `
+        <div id="modal">
+          <h3 style="text-align:center;">Add New Candidate</h3>
+          <input type="text" id="newName" placeholder="Candidate Name">
+          <input type="text" id="newParty" placeholder="Party Name">
+          <input type="number" id="newAge" placeholder="Age">
+          <input type="text" id="newSlogan" placeholder="Slogan (Optional)">
+          <input type="text" id="newImg" placeholder="Image URL">
+          <div style="display:flex;justify-content:space-between;">
+            <button onclick="saveNewCandidate()">Save</button>
+            <button onclick="closeModal()" style="background:#ef4444;">Cancel</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+
+    function saveNewCandidate() {
+      const name = document.getElementById("newName").value.trim();
+      const img = document.getElementById("newImg").value.trim();
+      const party = document.getElementById("newParty").value.trim();
+      const age = document.getElementById("newAge").value.trim();
+      const slogan = document.getElementById("newSlogan").value.trim();
+
+      if (!name || !img) {
+        alert("Please fill at least Name and Image URL.");
+        return;
+      }
+
+      let candidates = getCandidates();
+      candidates.push({ name, img, party, age, slogan, votes: 0 });
+      saveCandidates(candidates);
+
+      closeModal();
+      renderTable();
+    }
+
+    function removeCandidate(index) {
+      if (confirm("Are you sure to remove this candidate?")) {
+        let candidates = getCandidates();
+        candidates.splice(index, 1);
+        saveCandidates(candidates);
+        renderTable();
+      }
+    }
+
+    function editCandidate(index) {
+      const c = candidates[index];
+      const modal = document.createElement("div");
+      modal.id = "modalOverlay";
+      modal.innerHTML = `
+        <div id="modal">
+          <h3 style="text-align:center;">Edit Candidate</h3>
+          <input type="text" id="editName" value="${c.name}">
+          <input type="text" id="editParty" value="${c.party || ''}" placeholder="Party Name">
+          <input type="number" id="editAge" value="${c.age || ''}" placeholder="Age">
+          <input type="text" id="editSlogan" value="${c.slogan || ''}" placeholder="Slogan">
+          <input type="text" id="editImg" value="${c.img}">
+          <div style="display:flex;justify-content:space-between;">
+            <button onclick="saveEdit(${index})">Save</button>
+            <button onclick="closeModal()" style="background:#ef4444;">Cancel</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+
+    function saveEdit(index) {
+      const newName = document.getElementById("editName").value.trim();
+      const newParty = document.getElementById("editParty").value.trim();
+      const newAge = document.getElementById("editAge").value.trim();
+      const newSlogan = document.getElementById("editSlogan").value.trim();
+      const newImg = document.getElementById("editImg").value.trim();
+
+      if (!newName || !newImg) {
+        alert("Please fill name and image fields.");
+        return;
+      }
+
+      let candidates = getCandidates();
+      candidates[index] = { ...candidates[index], name: newName, party: newParty, age: newAge, slogan: newSlogan, img: newImg };
+      saveCandidates(candidates);
+      closeModal();
+      renderTable();
+    }
+
+    function closeModal() {
+      const modal = document.getElementById("modalOverlay");
+      if (modal) modal.remove();
+    }
+
+    function resetVotes() {
+      if (confirm("Reset all votes to zero?")) {
+        let candidates = getCandidates();
+        candidates.forEach(c => c.votes = 0);
+        saveCandidates(candidates);
+        renderTable();
+      }
+    }
+
+    function logout() {
+      window.location.href = "login.html";
+    }
+
+    renderTable();
+  </script>
+</body>
+</html>

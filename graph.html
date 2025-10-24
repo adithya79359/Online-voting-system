@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Live Vote Graph - Admin</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #0f172a, #2563eb);
+      color: #fff;
+      text-align: center;
+      margin: 0;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    h1 {
+      margin-top: 20px;
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+    }
+
+    .stats {
+      margin-top: 20px;
+      font-size: 18px;
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      flex-wrap: wrap;
+    }
+
+    .card {
+      background: #ffffff20;
+      backdrop-filter: blur(10px);
+      padding: 15px 25px;
+      border-radius: 12px;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+      min-width: 200px;
+    }
+
+    canvas {
+      margin-top: 40px;
+      background: #ffffff15;
+      border-radius: 16px;
+      padding: 15px;
+      max-width: 800px;
+      width: 90%;
+    }
+
+    button {
+      margin-top: 25px;
+      background: #fbbf24;
+      color: #111;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #f59e0b;
+    }
+  </style>
+</head>
+<body>
+  <h1>📊 Live Voting Statistics</h1>
+
+  <div class="stats">
+    <div class="card">
+      <strong>Total Users:</strong>
+      <div id="totalUsers">2000</div>
+    </div>
+    <div class="card">
+      <strong>Total Voted:</strong>
+      <div id="votedUsers">0</div>
+    </div>
+    <div class="card">
+      <strong>Voting Percentage:</strong>
+      <div id="votePercent">0%</div>
+    </div>
+  </div>
+
+  <canvas id="voteChart"></canvas>
+
+  <button onclick="window.location.href='admin.html'">⬅ Back to Admin</button>
+
+  <script>
+    const ctx = document.getElementById("voteChart").getContext("2d");
+    let chart;
+
+    const TOTAL_USERS = 2000; // Simulated total users
+    document.getElementById("totalUsers").textContent = TOTAL_USERS;
+
+    function getCandidates() {
+      return JSON.parse(localStorage.getItem("candidates")) || [];
+    }
+
+    function updateStats() {
+      const candidates = getCandidates();
+      const totalVotes = candidates.reduce((sum, c) => sum + (c.votes || 0), 0);
+
+      // Simulate that each vote means one user voted
+      const votedUsers = totalVotes; 
+      const percentage = ((votedUsers / TOTAL_USERS) * 100).toFixed(2);
+
+      document.getElementById("votedUsers").textContent = votedUsers;
+      document.getElementById("votePercent").textContent = percentage + "%";
+
+      const labels = candidates.map(c => c.name);
+      const votes = candidates.map(c => c.votes);
+      const colors = candidates.map(() => "#" + Math.floor(Math.random() * 16777215).toString(16));
+
+      if (chart) {
+        chart.data.labels = labels;
+        chart.data.datasets[0].data = votes;
+        chart.update();
+      } else {
+        chart = new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: labels,
+            datasets: [{
+              label: "Votes per Candidate",
+              data: votes,
+              backgroundColor: colors,
+              borderWidth: 1,
+            }]
+          },
+          options: {
+            responsive: true,
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: { color: "#fff" },
+                grid: { color: "rgba(255,255,255,0.2)" }
+              },
+              x: {
+                ticks: { color: "#fff" },
+                grid: { color: "rgba(255,255,255,0.2)" }
+              }
+            },
+            plugins: {
+              legend: { labels: { color: "#fff" } }
+            }
+          }
+        });
+      }
+    }
+
+    // Update every 2 seconds to simulate "live"
+    updateStats();
+    setInterval(updateStats, 2000);
+  </script>
+</body>
+</html>
