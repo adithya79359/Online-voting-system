@@ -4,204 +4,327 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Online Voting - Home</title>
-  <style>
-    body {
-      font-family: "Poppins", sans-serif;
-      background: linear-gradient(135deg, #4f46e5, #06b6d4);
-      margin: 0;
-      padding: 0;
-      color: #111;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
+<style>
+  body {
+    font-family: "Poppins", sans-serif;
+    background: linear-gradient(135deg, #4f46e5, #06b6d4);
+    margin: 0;
+    padding: 0;
+    color: #111;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
 
-    /* --- Navbar --- */
+  /* --- Navbar --- */
+  nav {
+    width: 100%;
+    background: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 40px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  nav h1 {
+    font-size: 22px;
+    color: #4f46e5;
+    margin: 0;
+  }
+
+  /* Center Box - College Name */
+  .college-name {
+    background: #4f46e5;
+    color: white;
+    padding: 8px 18px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: 0.5px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+    text-align: center;
+  }
+
+  /* Right Side - Username and Time */
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  nav .user-name {
+    font-weight: 600;
+    color: #111827;
+    font-size: 16px;
+    white-space: nowrap;
+  }
+
+  .time {
+  font-weight: 600;
+  color: #4f46e5;
+  font-size: 16px;
+  letter-spacing: 0.5px;
+  margin-right: 70px;
+}
+
+  /* --- Main Layout --- */
+  .main-container {
+    display: flex;
+    flex: 1;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 40px;
+    gap: 30px;
+    flex-wrap: wrap;
+  }
+
+  /* --- Profile Card --- */
+  .profile-card {
+    background: #fff;
+    padding: 25px 30px;
+    border-radius: 16px;
+    width: 300px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    height: fit-content;
+  }
+
+  .profile-card h2 {
+    color: #111827;
+    margin-bottom: 15px;
+  }
+
+  .profile-card p {
+    color: #374151;
+    margin: 6px 0;
+    word-break: break-word;
+  }
+
+  .logout-btn {
+    margin-top: 15px;
+    padding: 10px 18px;
+    border: none;
+    background: #ef4444;
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.3s;
+  }
+
+  .logout-btn:hover {
+    background: #b91c1c;
+  }
+
+  /* --- Candidate Section --- */
+  .candidate-section {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 25px;
+  }
+
+  .candidate-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    padding: 20px;
+    transition: transform 0.2s ease;
+  }
+
+  .candidate-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .candidate-card img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-bottom: 10px;
+  }
+
+  .candidate-card h3 {
+    margin: 10px 0;
+    color: #111827;
+    font-size: 18px;
+  }
+
+  .vote-btn {
+    background: #4f46e5;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.3s;
+  }
+
+  .vote-btn:hover {
+    background: #4338ca;
+  }
+
+  .vote-btn:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+  }
+
+  /* --- Popup --- */
+  .popup {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #10b981;
+    color: white;
+    padding: 12px 25px;
+    border-radius: 10px;
+    display: none;
+    font-weight: 600;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    animation: fadeInOut 3s ease forwards;
+    z-index: 2000;
+  }
+
+  @keyframes fadeInOut {
+    0% { opacity: 0; transform: translate(-50%, -20px); }
+    10%, 90% { opacity: 1; transform: translate(-50%, 0); }
+    100% { opacity: 0; transform: translate(-50%, -20px); }
+  }
+
+  .thanks-section {
+    display: none;
+    text-align: center;
+    margin-top: 30px;
+  }
+
+  .thanks-section h3 {
+    color: white;
+    font-size: 22px;
+  }
+
+  .thanks-section button {
+    background: #ef4444;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 10px;
+    font-weight: 600;
+  }
+
+  .thanks-section button:hover {
+    background: #b91c1c;
+  }
+
+  /* --- MEDIA QUERIES --- */
+
+  /* For tablets */
+  @media (max-width: 1024px) {
     nav {
-      width: 100%;
-      background: #fff;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      display: flex;
-      justify-content: space-between;
+      flex-direction: column;
       align-items: center;
-      padding: 15px 40px;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
+      gap: 8px;
     }
 
-    nav h1 {
-      font-size: 22px;
-      color: #4f46e5;
-      margin: 0;
+    .college-name {
+      margin: 5px 0;
     }
 
-    nav .user-name {
-      font-weight: 600;
-      color: #111827;
-    }
-
-    /* --- Main Layout --- */
     .main-container {
-      display: flex;
-      flex: 1;
-      justify-content: space-between;
-      padding: 40px;
-      gap: 30px;
-    }
-
-    /* --- Profile Card --- */
-    .profile-card {
-      background: #fff;
-      padding: 25px 30px;
-      border-radius: 16px;
-      width: 300px;
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-      text-align: center;
-      height: fit-content;
-    }
-
-    .profile-card h2 {
-      color: #111827;
-      margin-bottom: 15px;
-    }
-
-    .profile-card p {
-      color: #374151;
-      margin: 6px 0;
-    }
-
-    .logout-btn {
-      margin-top: 15px;
-      padding: 10px 18px;
-      border: none;
-      background: #ef4444;
-      color: white;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: background 0.3s;
-    }
-
-    .logout-btn:hover {
-      background: #b91c1c;
-    }
-
-    /* --- Candidate Section --- */
-    .candidate-section {
-      flex: 1;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 25px;
-    }
-
-    .candidate-card {
-      background: #fff;
-      border-radius: 16px;
-      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-      text-align: center;
       padding: 20px;
-      transition: transform 0.2s ease;
+      flex-direction: column;
+      align-items: center;
     }
 
-    .candidate-card:hover {
-      transform: translateY(-5px);
+    .profile-card {
+      width: 90%;
+      margin-bottom: 20px;
+    }
+
+    .candidate-section {
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      width: 100%;
+    }
+  }
+
+  /* For mobile phones */
+  @media (max-width: 600px) {
+    nav h1 {
+      font-size: 18px;
+    }
+
+    .college-name {
+      font-size: 13px;
+      padding: 6px 10px;
+    }
+
+    nav .user-name, .time {
+      font-size: 13px;
+    }
+
+    .main-container {
+      padding: 15px;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .profile-card {
+      width: 100%;
+      padding: 20px;
     }
 
     .candidate-card img {
-      width: 100px;
-      height: 100px;
-      object-fit: cover;
-      border-radius: 50%;
-      margin-bottom: 10px;
+      width: 80px;
+      height: 80px;
     }
 
     .candidate-card h3 {
-      margin: 10px 0;
-      color: #111827;
+      font-size: 16px;
     }
 
     .vote-btn {
-      background: #4f46e5;
-      color: #fff;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: background 0.3s;
-    }
-
-    .vote-btn:hover {
-      background: #4338ca;
-    }
-
-    .vote-btn:disabled {
-      background: #9ca3af;
-      cursor: not-allowed;
-    }
-
-    /* --- Popup --- */
-    .popup {
-      position: fixed;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #10b981;
-      color: white;
-      padding: 12px 25px;
-      border-radius: 10px;
-      display: none;
-      font-weight: 600;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-      animation: fadeInOut 3s ease forwards;
-    }
-
-    @keyframes fadeInOut {
-      0% { opacity: 0; transform: translate(-50%, -20px); }
-      10%, 90% { opacity: 1; transform: translate(-50%, 0); }
-      100% { opacity: 0; transform: translate(-50%, -20px); }
-    }
-
-    .thanks-section {
-      display: none;
-      text-align: center;
-      margin-top: 30px;
+      padding: 8px 16px;
+      font-size: 14px;
     }
 
     .thanks-section h3 {
-      color: white;
+      font-size: 18px;
     }
+  }
+</style>
 
-    .thanks-section button {
-      background: #ef4444;
-      border: none;
-      color: white;
-      padding: 10px 20px;
-      border-radius: 8px;
-      cursor: pointer;
-      margin-top: 10px;
-      font-weight: 600;
-    }
-
-    .thanks-section button:hover {
-      background: #b91c1c;
-    }
-  </style>
 </head>
 <body>
-  <!-- Navbar -->
-  <nav>
-    <h1>🗳️ Online Voting System</h1>
+   
+
+ <!-- Navbar -->
+<nav>
+  <h1>🗳️ Online Voting System</h1>
+  <div class="college-name">Manipal Institute of Technology</div>
+  <div class="nav-right">
     <span class="user-name" id="navUser"></span>
-  </nav>
+    <span class="time" id="currentTime"></span>
+  </div>
+</nav>
+
+
 
   <div class="main-container">
     <!-- Profile Section -->
     <div class="profile-card" id="profile">
       <h2>User Profile</h2>
       <p><strong>Name:</strong> <span id="userName"></span></p>
-      <p><strong>Phone:</strong> <span id="userPhone"></span></p>
+      <p><strong>ID:</strong> <span id="userPhone"></span></p>
       <p><strong>Last Online:</strong> <span id="lastOnline"></span></p>
       <button class="logout-btn" onclick="logout()">Logout</button>
     </div>
@@ -217,10 +340,9 @@
     <button onclick="logout()">Logoff</button>
   </div>
 
-  <script>
-    // Retrieve user details from localStorage
-    const userName = localStorage.getItem("userName");
-    const userPhone = localStorage.getItem("userPhone");
+   <script>
+    // Retrieve active voter details
+    const activeVoter = JSON.parse(localStorage.getItem("activeVoter"));
 
     const nameField = document.getElementById("userName");
     const phoneField = document.getElementById("userPhone");
@@ -229,12 +351,12 @@
     const candidateList = document.getElementById("candidateList");
 
     // Redirect if not logged in
-    if (!userName || !userPhone) {
+    if (!activeVoter) {
       window.location.href = "login.html";
     } else {
-      nameField.textContent = userName;
-      phoneField.textContent = userPhone;
-      navUser.textContent = "👋 " + userName;
+      nameField.textContent = activeVoter.name;
+      phoneField.textContent = activeVoter.voterId; // show voter ID instead of phone
+      navUser.textContent = "👋 " + activeVoter.name;
     }
 
     // --- Cookies for Last Online ---
@@ -267,7 +389,6 @@
       const allButtons = document.querySelectorAll(".vote-btn");
       allButtons.forEach(btn => btn.disabled = true);
 
-      // Update vote count in localStorage
       const candidates = JSON.parse(localStorage.getItem("candidates")) || [];
       const found = candidates.find(c => c.name === candidate);
       if (found) {
@@ -275,7 +396,6 @@
         localStorage.setItem("candidates", JSON.stringify(candidates));
       }
 
-      // Popup message
       const popup = document.getElementById("popupMsg");
       popup.textContent = `You voted for ${candidate}`;
       popup.style.display = "block";
@@ -289,10 +409,20 @@
 
     // --- Logout Function ---
     function logout() {
-      localStorage.removeItem("userName");
-      localStorage.removeItem("userPhone");
+      localStorage.removeItem("activeVoter");
       window.location.href = "login.html";
     }
+    // --- Show Current Time (Live Update) ---
+function updateTime() {
+  const timeElement = document.getElementById("currentTime");
+  const now = new Date();
+  const timeString = now.toLocaleTimeString("en-IN", { hour12: false });
+  timeElement.textContent = timeString;
+}
+setInterval(updateTime, 1000);
+updateTime(); // call once immediately
+
   </script>
+
 </body>
 </html>

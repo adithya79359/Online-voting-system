@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Online Voting - Home</title>
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #4f46e5, #06b6d4);
+      margin: 0;
+      padding: 0;
+      color: #111;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* --- Navbar --- */
+    nav {
+      width: 100%;
+      background: #fff;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 40px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      flex-wrap: wrap;
+    }
+
+    nav h1 {
+      font-size: 22px;
+      color: #4f46e5;
+      margin: 0;
+    }
+
+    nav .user-name {
+      font-weight: 600;
+      color: #111827;
+      font-size: 16px;
+    }
+
+    /* --- Main Layout --- */
+    .main-container {
+      display: flex;
+      flex: 1;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 40px;
+      gap: 30px;
+      flex-wrap: wrap;
+    }
+
+    /* --- Profile Card --- */
+    .profile-card {
+      background: #fff;
+      padding: 25px 30px;
+      border-radius: 16px;
+      width: 300px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      height: fit-content;
+    }
+
+    .profile-card h2 {
+      color: #111827;
+      margin-bottom: 15px;
+    }
+
+    .profile-card p {
+      color: #374151;
+      margin: 6px 0;
+      word-break: break-word;
+    }
+
+    .logout-btn {
+      margin-top: 15px;
+      padding: 10px 18px;
+      border: none;
+      background: #ef4444;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+
+    .logout-btn:hover {
+      background: #b91c1c;
+    }
+
+    /* --- Candidate Section --- */
+    .candidate-section {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 25px;
+    }
+
+    .candidate-card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      padding: 20px;
+      transition: transform 0.2s ease;
+    }
+
+    .candidate-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .candidate-card img {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 50%;
+      margin-bottom: 10px;
+    }
+
+    .candidate-card h3 {
+      margin: 10px 0;
+      color: #111827;
+      font-size: 18px;
+    }
+
+    .vote-btn {
+      background: #4f46e5;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+
+    .vote-btn:hover {
+      background: #4338ca;
+    }
+
+    .vote-btn:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+    }
+
+    /* --- Popup --- */
+    .popup {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #10b981;
+      color: white;
+      padding: 12px 25px;
+      border-radius: 10px;
+      display: none;
+      font-weight: 600;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      animation: fadeInOut 3s ease forwards;
+      z-index: 2000;
+    }
+
+    @keyframes fadeInOut {
+      0% { opacity: 0; transform: translate(-50%, -20px); }
+      10%, 90% { opacity: 1; transform: translate(-50%, 0); }
+      100% { opacity: 0; transform: translate(-50%, -20px); }
+    }
+
+    .thanks-section {
+      display: none;
+      text-align: center;
+      margin-top: 30px;
+    }
+
+    .thanks-section h3 {
+      color: white;
+      font-size: 22px;
+    }
+
+    .thanks-section button {
+      background: #ef4444;
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+      font-weight: 600;
+    }
+
+    .thanks-section button:hover {
+      background: #b91c1c;
+    }
+
+    /* --- MEDIA QUERIES --- */
+
+    /* For tablets */
+    @media (max-width: 1024px) {
+      nav {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 15px 20px;
+      }
+
+      .main-container {
+        padding: 20px;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .profile-card {
+        width: 90%;
+        margin-bottom: 20px;
+      }
+
+      .candidate-section {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        width: 100%;
+      }
+    }
+
+    /* For mobile phones */
+    @media (max-width: 600px) {
+      nav h1 {
+        font-size: 18px;
+      }
+
+      nav .user-name {
+        font-size: 14px;
+      }
+
+      .main-container {
+        padding: 15px;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .profile-card {
+        width: 100%;
+        padding: 20px;
+      }
+
+      .candidate-card img {
+        width: 80px;
+        height: 80px;
+      }
+
+      .candidate-card h3 {
+        font-size: 16px;
+      }
+
+      .vote-btn {
+        padding: 8px 16px;
+        font-size: 14px;
+      }
+
+      .thanks-section h3 {
+        font-size: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav>
+    <h1>🗳️ Online Voting System</h1>
+    <span class="user-name" id="navUser"></span>
+  </nav>
+
+  <div class="main-container">
+    <!-- Profile Section -->
+    <div class="profile-card" id="profile">
+      <h2>User Profile</h2>
+      <p><strong>Name:</strong> <span id="userName"></span></p>
+      <p><strong>Phone:</strong> <span id="userPhone"></span></p>
+      <p><strong>Last Online:</strong> <span id="lastOnline"></span></p>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+
+    <!-- Candidates -->
+    <div class="candidate-section" id="candidateList"></div>
+  </div>
+
+  <div class="popup" id="popupMsg"></div>
+
+  <div class="thanks-section" id="thanksSection">
+    <h3>🎉 Thanks for voting!</h3>
+    <button onclick="logout()">Logoff</button>
+  </div>
+
+  <script>
+    // Retrieve user details from localStorage
+    const userName = localStorage.getItem("userName");
+    const userPhone = localStorage.getItem("userPhone");
+
+    const nameField = document.getElementById("userName");
+    const phoneField = document.getElementById("userPhone");
+    const navUser = document.getElementById("navUser");
+    const lastOnline = document.getElementById("lastOnline");
+    const candidateList = document.getElementById("candidateList");
+
+    // Redirect if not logged in
+ if (!userName || !userPhone) {
+  window.location.href = "login.html";
+} else {
+  nameField.textContent = userName;
+  phoneField.textContent = userPhone;
+  navUser.textContent = "👋 Manipal Institute of Technology";
+}
+
+
+
+    // --- Cookies for Last Online ---
+    const lastSeen = document.cookie.replace(/(?:(?:^|.*;\s*)lastOnline\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+    const now = new Date().toLocaleString();
+    lastOnline.textContent = lastSeen || "First Time Login";
+    document.cookie = "lastOnline=" + now + "; path=/;";
+
+    // --- Load Candidates from localStorage ---
+    const candidates = JSON.parse(localStorage.getItem("candidates")) || [];
+
+    if (candidates.length === 0) {
+      candidateList.innerHTML = `<p style="color:white;font-size:18px;">No candidates available. Please contact admin.</p>`;
+    } else {
+      candidateList.innerHTML = "";
+      candidates.forEach(c => {
+        const div = document.createElement("div");
+        div.className = "candidate-card";
+        div.innerHTML = `
+          <img src="${c.img}" alt="${c.name}">
+          <h3>${c.name}</h3>
+          <button class="vote-btn" onclick="vote(this, '${c.name}')">Vote</button>
+        `;
+        candidateList.appendChild(div);
+      });
+    }
+
+    // --- Vote Function ---
+    function vote(button, candidate) {
+      const allButtons = document.querySelectorAll(".vote-btn");
+      allButtons.forEach(btn => btn.disabled = true);
+
+      const candidates = JSON.parse(localStorage.getItem("candidates")) || [];
+      const found = candidates.find(c => c.name === candidate);
+      if (found) {
+        found.votes = (found.votes || 0) + 1;
+        localStorage.setItem("candidates", JSON.stringify(candidates));
+      }
+
+      const popup = document.getElementById("popupMsg");
+      popup.textContent = `You voted for ${candidate}`;
+      popup.style.display = "block";
+
+      setTimeout(() => {
+        popup.style.display = "none";
+        document.getElementById("candidateList").style.display = "none";
+        document.getElementById("thanksSection").style.display = "block";
+      }, 3000);
+    }
+
+    // --- Logout Function ---
+    function logout() {
+      localStorage.removeItem("userName");
+      localStorage.removeItem("userPhone");
+      window.location.href = "login.html";
+    }
+  </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Online Voting - Home</title>
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #4f46e5, #06b6d4);
+      margin: 0;
+      padding: 0;
+      color: #111;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* --- Navbar --- */
+    nav {
+      width: 100%;
+      background: #fff;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 40px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      flex-wrap: wrap;
+    }
+
+    nav h1 {
+      font-size: 22px;
+      color: #4f46e5;
+      margin: 0;
+    }
+
+    nav .user-name {
+      font-weight: 600;
+      color: #111827;
+      font-size: 16px;
+    }
+
+    /* --- Main Layout --- */
+    .main-container {
+      display: flex;
+      flex: 1;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 40px;
+      gap: 30px;
+      flex-wrap: wrap;
+    }
+
+    /* --- Profile Card --- */
+    .profile-card {
+      background: #fff;
+      padding: 25px 30px;
+      border-radius: 16px;
+      width: 300px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      height: fit-content;
+    }
+
+    .profile-card h2 {
+      color: #111827;
+      margin-bottom: 15px;
+    }
+
+    .profile-card p {
+      color: #374151;
+      margin: 6px 0;
+      word-break: break-word;
+    }
+
+    .logout-btn {
+      margin-top: 15px;
+      padding: 10px 18px;
+      border: none;
+      background: #ef4444;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+
+    .logout-btn:hover {
+      background: #b91c1c;
+    }
+
+    /* --- Candidate Section --- */
+    .candidate-section {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 25px;
+    }
+
+    .candidate-card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      padding: 20px;
+      transition: transform 0.2s ease;
+    }
+
+    .candidate-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .candidate-card img {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 50%;
+      margin-bottom: 10px;
+    }
+
+    .candidate-card h3 {
+      margin: 10px 0;
+      color: #111827;
+      font-size: 18px;
+    }
+
+    .vote-btn {
+      background: #4f46e5;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+
+    .vote-btn:hover {
+      background: #4338ca;
+    }
+
+    .vote-btn:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+    }
+
+    /* --- Popup --- */
+    .popup {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #10b981;
+      color: white;
+      padding: 12px 25px;
+      border-radius: 10px;
+      display: none;
+      font-weight: 600;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      animation: fadeInOut 3s ease forwards;
+      z-index: 2000;
+    }
+
+    @keyframes fadeInOut {
+      0% { opacity: 0; transform: translate(-50%, -20px); }
+      10%, 90% { opacity: 1; transform: translate(-50%, 0); }
+      100% { opacity: 0; transform: translate(-50%, -20px); }
+    }
+
+    .thanks-section {
+      display: none;
+      text-align: center;
+      margin-top: 30px;
+    }
+
+    .thanks-section h3 {
+      color: white;
+      font-size: 22px;
+    }
+
+    .thanks-section button {
+      background: #ef4444;
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+      font-weight: 600;
+    }
+
+    .thanks-section button:hover {
+      background: #b91c1c;
+    }
+
+    /* --- MEDIA QUERIES --- */
+
+    /* For tablets */
+    @media (max-width: 1024px) {
+      nav {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 15px 20px;
+      }
+
+      .main-container {
+        padding: 20px;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .profile-card {
+        width: 90%;
+        margin-bottom: 20px;
+      }
+
+      .candidate-section {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        width: 100%;
+      }
+    }
+
+    /* For mobile phones */
+    @media (max-width: 600px) {
+      nav h1 {
+        font-size: 18px;
+      }
+
+      nav .user-name {
+        font-size: 14px;
+      }
+
+      .main-container {
+        padding: 15px;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .profile-card {
+        width: 100%;
+        padding: 20px;
+      }
+
+      .candidate-card img {
+        width: 80px;
+        height: 80px;
+      }
+
+      .candidate-card h3 {
+        font-size: 16px;
+      }
+
+      .vote-btn {
+        padding: 8px 16px;
+        font-size: 14px;
+      }
+
+      .thanks-section h3 {
+        font-size: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav>
+    <h1>🗳️ Online Voting System</h1>
+    <span class="user-name" id="navUser"></span>
+  </nav>
+
+  <div class="main-container">
+    <!-- Profile Section -->
+    <div class="profile-card" id="profile">
+      <h2>User Profile</h2>
+      <p><strong>Name:</strong> <span id="userName"></span></p>
+      <p><strong>Phone:</strong> <span id="userPhone"></span></p>
+      <p><strong>Last Online:</strong> <span id="lastOnline"></span></p>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+
+    <!-- Candidates -->
+    <div class="candidate-section" id="candidateList"></div>
+  </div>
+
+  <div class="popup" id="popupMsg"></div>
+
+  <div class="thanks-section" id="thanksSection">
+    <h3>🎉 Thanks for voting!</h3>
+    <button onclick="logout()">Logoff</button>
+  </div>
+
+  <script>
+    // Retrieve user details from localStorage
+    const userName = localStorage.getItem("userName");
+    const userPhone = localStorage.getItem("userPhone");
+
+    const nameField = document.getElementById("userName");
+    const phoneField = document.getElementById("userPhone");
+    const navUser = document.getElementById("navUser");
+    const lastOnline = document.getElementById("lastOnline");
+    const candidateList = document.getElementById("candidateList");
+
+    // Redirect if not logged in
+ if (!userName || !userPhone) {
+  window.location.href = "login.html";
+} else {
+  nameField.textContent = userName;
+  phoneField.textContent = userPhone;
+  navUser.textContent = "👋 Manipal Institute of Technology";
+}
+
+
+
+    // --- Cookies for Last Online ---
+    const lastSeen = document.cookie.replace(/(?:(?:^|.*;\s*)lastOnline\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+    const now = new Date().toLocaleString();
+    lastOnline.textContent = lastSeen || "First Time Login";
+    document.cookie = "lastOnline=" + now + "; path=/;";
+
+    // --- Load Candidates from localStorage ---
+    const candidates = JSON.parse(localStorage.getItem("candidates")) || [];
+
+    if (candidates.length === 0) {
+      candidateList.innerHTML = `<p style="color:white;font-size:18px;">No candidates available. Please contact admin.</p>`;
+    } else {
+      candidateList.innerHTML = "";
+      candidates.forEach(c => {
+        const div = document.createElement("div");
+        div.className = "candidate-card";
+        div.innerHTML = `
+          <img src="${c.img}" alt="${c.name}">
+          <h3>${c.name}</h3>
+          <button class="vote-btn" onclick="vote(this, '${c.name}')">Vote</button>
+        `;
+        candidateList.appendChild(div);
+      });
+    }
+
+    // --- Vote Function ---
+    function vote(button, candidate) {
+      const allButtons = document.querySelectorAll(".vote-btn");
+      allButtons.forEach(btn => btn.disabled = true);
+
+      const candidates = JSON.parse(localStorage.getItem("candidates")) || [];
+      const found = candidates.find(c => c.name === candidate);
+      if (found) {
+        found.votes = (found.votes || 0) + 1;
+        localStorage.setItem("candidates", JSON.stringify(candidates));
+      }
+
+      const popup = document.getElementById("popupMsg");
+      popup.textContent = `You voted for ${candidate}`;
+      popup.style.display = "block";
+
+      setTimeout(() => {
+        popup.style.display = "none";
+        document.getElementById("candidateList").style.display = "none";
+        document.getElementById("thanksSection").style.display = "block";
+      }, 3000);
+    }
+
+    // --- Logout Function ---
+    function logout() {
+      localStorage.removeItem("userName");
+      localStorage.removeItem("userPhone");
+      window.location.href = "login.html";
+    }
+  </script>
+</body>
+</html>
